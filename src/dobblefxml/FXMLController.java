@@ -1,48 +1,113 @@
 package dobblefxml;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+import dobblefxml.model.*;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import dobblefxml.model.Symbol;
-import dobblefxml.model.Card;
-import dobblefxml.model.GameLogic;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
+import javafx.stage.Stage;
 
-/**
- * Controlador principal del juego que maneja la interacción entre la lógica (GameLogic) 
- * y la vista (GameView). Su objetivo es coordinar las acciones del usuario y actualizar 
- * el estado del juego.
- */
-public class FXMLController implements Initializable {
-    // Referencias a la lógica del juego
-    private GameLogic logic;  // Maneja las reglas y el estado del juego
-    
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // Initialize game logic here
-        // You'll need to create and populate a deck of cards first
-        // For now, we'll leave this empty as the deck creation would be complex
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class FXMLController {
+    @FXML
+    private Label feedbackLabel;
+
+    @FXML
+    private Label scoreLabel;
+
+    @FXML
+    private FlowPane cardPaneA;
+
+    @FXML
+    private FlowPane cardPaneB;
+
+    @FXML
+    private Button nextRoundButton;
+
+    private GameLogic gameLogic;
+    private Stage stage;
+    private int score;
+    private Set<Button> symbolButtons = new HashSet<>();
+    private Symbol correctSymbol;
+
+    public void initGame(Stage stage, List<Card> deck) {
+        this.stage = stage;
+        this.gameLogic = new GameLogic(deck);
+        this.score = 0;
+        updateView();
     }
-    
-    /**
-     * Método llamado cuando el usuario hace clic en un símbolo.
-     * @param selected Símbolo seleccionado por el jugador.
-     */
-    public void onSymbolClick(Symbol selected) {
-        if (logic != null) {
-            // Verifica si el símbolo seleccionado está presente en AMBAS cartas
-            boolean isCorrect = logic.getCardB().getSymbols().contains(selected) 
-                            && logic.getCardA().getSymbols().contains(selected);
 
-            // Si la selección fue correcta:
-            if (isCorrect) {
-                logic.nextRound();  // Avanza a la siguiente ronda (actualiza las cartas)
+    private void updateView() {
+        Card cardA = gameLogic.getCardA();
+        Card cardB = gameLogic.getCardB();
+
+        // Limpiar los paneles
+        cardPaneA.getChildren().clear();
+        cardPaneB.getChildren().clear();
+        symbolButtons.clear();
+
+        // Encontrar el símbolo común
+        correctSymbol = null;
+        for (Symbol s : cardA.getSymbols()) {
+            if (cardB.getSymbols().contains(s)) {
+                correctSymbol = s;
+                break;
             }
         }
+
+        // Crear botones para los símbolos de la primera carta
+        for (Symbol symbol : cardA.getSymbols()) {
+            Button button = new Button();
+            ImageView imageView = new ImageView(symbol.getImage());
+            imageView.setFitHeight(60);
+            imageView.setFitWidth(60);
+            button.setGraphic(imageView);
+            button.setOnAction(event -> handleSymbolSelection(symbol));
+            cardPaneA.getChildren().add(button);
+            symbolButtons.add(button);
+        }
+
+        // Crear botones para los símbolos de la segunda carta
+        for (Symbol symbol : cardB.getSymbols()) {
+            Button button = new Button();
+            ImageView imageView = new ImageView(symbol.getImage());
+            imageView.setFitHeight(60);
+            imageView.setFitWidth(60);
+            button.setGraphic(imageView);
+            button.setOnAction(event -> handleSymbolSelection(symbol));
+            cardPaneB.getChildren().add(button);
+            symbolButtons.add(button);
+        }
+
+        scoreLabel.setText("Puntaje: " + score);
+        nextRoundButton.setDisable(true);
+        feedbackLabel.setText("🎮 ¡Encuentra el símbolo común!");
     }
-    
-    // Setter for game logic
-    public void setGameLogic(GameLogic logic) {
-        this.logic = logic;
+
+    private void handleSymbolSelection(Symbol selectedSymbol) {
+        if (selectedSymbol.equals(correctSymbol)) {
+            score++;
+            feedbackLabel.setText("¡Correcto! +1 punto");
+        } else {
+            feedbackLabel.setText("¡Incorrecto! Intenta de nuevo");
+        }
+        updateButtonStates();
+    }
+
+    private void updateButtonStates() {
+        for (Button button : symbolButtons) {
+            button.setDisable(true);
+        }
+        nextRoundButton.setDisable(false);
+    }
+
+    @FXML
+    private void handleNextRound() {
+        gameLogic.nextRound();
+        updateView();
     }
 }
