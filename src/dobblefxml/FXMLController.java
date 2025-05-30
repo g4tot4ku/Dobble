@@ -59,33 +59,47 @@ public class FXMLController {
             }
         }
 
-        // Crear botones para los símbolos de la primera carta
-        for (Symbol symbol : cardA.getSymbols()) {
-            Button button = new Button();
-            ImageView imageView = new ImageView(symbol.getImage());
-            imageView.setFitHeight(60);
-            imageView.setFitWidth(60);
-            button.setGraphic(imageView);
-            button.setOnAction(event -> handleSymbolSelection(symbol));
-            cardPaneA.getChildren().add(button);
-            symbolButtons.add(button);
-        }
+        // Distribuir los símbolos de la primera carta en un círculo
+        distributeSymbolsCircularly(cardA, cardPaneA);
 
-        // Crear botones para los símbolos de la segunda carta
-        for (Symbol symbol : cardB.getSymbols()) {
-            Button button = new Button();
-            ImageView imageView = new ImageView(symbol.getImage());
-            imageView.setFitHeight(60);
-            imageView.setFitWidth(60);
-            button.setGraphic(imageView);
-            button.setOnAction(event -> handleSymbolSelection(symbol));
-            cardPaneB.getChildren().add(button);
-            symbolButtons.add(button);
-        }
+        // Distribuir los símbolos de la segunda carta en un círculo
+        distributeSymbolsCircularly(cardB, cardPaneB);
 
         scoreLabel.setText("Puntaje: " + score);
         nextRoundButton.setDisable(true);
         feedbackLabel.setText("🎮 ¡Encuentra el símbolo común!");
+    }
+
+    private void distributeSymbolsCircularly(Card card, FlowPane pane) {
+        List<Symbol> symbols = card.getSymbols();
+        int numSymbols = symbols.size();
+        double centerX = 100; // Centro del círculo (mitad del ancho de cardPane: 200/2)
+        double centerY = 100; // Centro del círculo (mitad del alto de cardPane: 200/2)
+        double radius = 60;   // Radio del círculo donde se posicionarán los botones
+
+        for (int i = 0; i < numSymbols; i++) {
+            Symbol symbol = symbols.get(i);
+
+            // Calcular la posición del botón en un círculo
+            double angle = 2 * Math.PI * i / numSymbols; // Ángulo para cada símbolo
+            double x = centerX + radius * Math.cos(angle) - 30; // -30 para centrar el botón (ancho/2)
+            double y = centerY + radius * Math.sin(angle) - 30; // -30 para centrar el botón (alto/2)
+
+            Button button = new Button();
+            ImageView imageView = new ImageView(symbol.getImage());
+            imageView.setFitHeight(60);
+            imageView.setFitWidth(60);
+            button.setGraphic(imageView);
+            button.setStyle("-fx-background-color: transparent;"); // Hacer el fondo del botón transparente
+            button.setOnAction(event -> handleSymbolSelection(symbol));
+
+            // Posicionar el botón
+            button.setLayoutX(x);
+            button.setLayoutY(y);
+
+            pane.getChildren().add(button);
+            symbolButtons.add(button);
+        }
     }
 
     private void handleSymbolSelection(Symbol selectedSymbol) {
