@@ -7,8 +7,12 @@
     <children>
         <VBox fx:id="root" alignment="CENTER" spacing="20" style="-fx-padding: 20;" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
             <children>
-                <!-- Etiqueta de retroalimentación -->
-                <Label fx:id="feedbackLabel" text="🎮 ¡Encuentra el símbolo común!" style="-fx-font-size: 16px; -fx-text-fill: white;" />
+                <!-- Etiqueta de retroalimentación y temporizador -->
+                <HBox spacing="20" alignment="CENTER">
+                    <Label fx:id="feedbackLabel" text="🎮 ¡Encuentra el símbolo común!" style="-fx-font-size: 16px; -fx-text-fill: white;" />
+                    <Label fx:id="timerLabel" text="Tiempo: 10s" style="-fx-font-size: 16px; -fx-text-fill: white;" />
+                    <Label fx:id="playerLabel" text="Turno: Jugador 1" style="-fx-font-size: 16px; -fx-text-fill: white;" />
+                </HBox>
 
                 <!-- Etiqueta de puntaje -->
                 <Label fx:id="scoreLabel" text="Puntaje: 0" style="-fx-font-size: 14px; -fx-text-fill: white;" />
@@ -19,8 +23,12 @@
                 <!-- Panel para la segunda carta -->
                 <FlowPane fx:id="cardPaneB" hgap="10" vgap="10" prefHeight="200" prefWidth="200" style="-fx-background-color: white; -fx-background-radius: 100; -fx-border-color: black; -fx-border-width: 2; -fx-border-radius: 100; -fx-padding: 10;" alignment="CENTER" />
 
-                <!-- Botón para la siguiente ronda -->
-                <Button fx:id="nextRoundButton" text="➡ Siguiente Ronda" disable="true" style="-fx-font-size: 14px; -fx-padding: 5 20; -fx-background-color: #D4D4D8; -fx-text-fill: #1F2937;" onAction="#handleNextRound" />
+                <!-- Botones para la siguiente ronda, finalizar y volver a jugar -->
+                <HBox spacing="10" alignment="CENTER">
+                    <Button fx:id="nextRoundButton" text="➡ Siguiente Ronda" disable="true" style="-fx-font-size: 14px; -fx-padding: 5 20; -fx-background-color: #D4D4D8; -fx-text-fill: #1F2937;" onAction="#handleNextRound" />
+                    <Button fx:id="endGameButton" text="Finalizar Juego" style="-fx-font-size: 14px; -fx-padding: 5 20; -fx-background-color: #D4D4D8; -fx-text-fill: #1F2937;" onAction="#handleEndGame" />
+                    <Button fx:id="restartButton" text="Volver a Jugar" style="-fx-font-size: 14px; -fx-padding: 5 20; -fx-background-color: #D4D4D8; -fx-text-fill: #1F2937;" onAction="#handleRestartGame" visible="false" />
+                </HBox>
             </children>
         </VBox>
     </children>

@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import static javafx.application.Application.launch;
 
 /**
  * Main application class for Dobble game
